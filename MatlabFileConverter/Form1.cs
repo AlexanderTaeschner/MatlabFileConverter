@@ -1,12 +1,12 @@
 ﻿namespace MatlabFileConverter
 {
+    using Microsoft.VisualBasic;
+    using Microsoft.VisualBasic.CompilerServices;
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Windows.Forms;
-    using Microsoft.VisualBasic.CompilerServices;
-    using Microsoft.VisualBasic;
-    using System.Globalization;
 
     public partial class Form1 : Form
     {
