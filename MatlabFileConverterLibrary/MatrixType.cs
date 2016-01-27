@@ -5,16 +5,13 @@
 // <author>Alexander Täschner</author>
 //----------------------------------------------------------------------------------------------------
 
-namespace MatlabFileConverter
+namespace MatlabFileConverterLibrary
 {
-    enum DataFormat
+    enum MatrixType
     {
         Undefined,
-        DoublePrecision,
-        SinglePrecision,
-        SignedInteger32,
-        SignedInteger16,
-        UnsignedInteger16,
-        UnsignedInteger8
+        FullNumeric,
+        Text,
+        SparseNumeric
     }
 }

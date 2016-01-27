@@ -5,16 +5,20 @@
 // <author>Alexander Täschner</author>
 //----------------------------------------------------------------------------------------------------
 
-namespace MatlabFileConverter
+namespace MatlabFileConverterLibrary
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.IO;
 
-    internal static class MatlabFileReader
+    public static class MatlabFileReader
     {
         public static List<Value> ReadFile(string matlabFileName)
         {
+            Contract.Requires(!string.IsNullOrEmpty(matlabFileName));
+            Contract.Ensures(Contract.Result<List<Value>>() != null);
+
             char[][] name = null;
             char[][] description = null;
             int[][] dataInfo = null;
@@ -103,20 +107,32 @@ namespace MatlabFileConverter
 
             for (int i = 0; i < name.Length; i++)
             {
+                int[] dataInfoRow = dataInfo[i];
+                if ((dataInfoRow == null) || (dataInfoRow.Length != 4))
+                {
+                    throw new NotSupportedException();
+                }
+
                 string valueName = new string(name[i]);
                 valueName = valueName.TrimEnd('\0');
                 string valueDescription = new string(description[i]);
                 valueDescription = valueDescription.TrimEnd('\0');
-                int storageMatrix = dataInfo[i][0];
-                int storageColumn = Math.Abs(dataInfo[i][1]);
-                int sign = Math.Sign(dataInfo[i][1]);
-                int interpolation = dataInfo[i][2];
-                int extrapolation = dataInfo[i][3];
+                int storageMatrix = dataInfoRow[0];
+                Contract.Assume(dataInfoRow[1] != int.MinValue);
+                int storageColumn = Math.Abs(dataInfoRow[1]);
+                int sign = Math.Sign(dataInfoRow[1]);
+                int interpolation = dataInfoRow[2];
+                int extrapolation = dataInfoRow[3];
 
                 double[] values;
 
                 if (storageMatrix == 2)
                 {
+                    if ((data2.Length < 1) || (data2[0] == null))
+                    {
+                        throw new NotSupportedException();
+                    }
+
                     int col = storageColumn - 1;
                     if ((col < 0) || (col >= data2[0].Length))
                     {
@@ -126,23 +142,28 @@ namespace MatlabFileConverter
                     values = new double[data2.Length];
                     for (int row = 0; row < data2.Length; row++)
                     {
-                        values[row] = sign * data2[row][col];
+                        double[] data2Row = data2[row];
+                        Contract.Assume(data2Row != null);
+                        Contract.Assume(col < data2Row.Length);
+                        values[row] = sign * data2Row[col];
                     }
                 }
                 else if (storageMatrix == 1) // fixed parameters
                 {
-                    if (data1.Length != 2)
+                    if ((data1.Length != 2) || (data1[0] == null) || (data1[1] == null))
                     {
                         throw new NotSupportedException();
                     }
 
+                    double[] data1Row = data1[0];
+
                     int col = storageColumn - 1;
-                    if ((col < 0) || (col >= data1[0].Length))
+                    if ((col < 0) || (col >= data1Row.Length) || (col >= data1[1].Length))
                     {
                         throw new NotImplementedException();
                     }
 
-                    if (data1[0][col] != data1[1][col])
+                    if (data1Row[col] != data1[1][col])
                     {
                         throw new NotImplementedException();
                     }
@@ -150,7 +171,7 @@ namespace MatlabFileConverter
                     values = new double[data2.Length];
                     for (int row = 0; row < data2.Length; row++)
                     {
-                        values[row] = sign * data1[0][col];
+                        values[row] = sign * data1Row[col];
                     }
                 }
                 else
@@ -167,6 +188,8 @@ namespace MatlabFileConverter
 
         private static Matrix ReadMatrix(BinaryReader br)
         {
+            Contract.Requires(br != null);
+
             int type = br.ReadInt32();
 
             if (type > 9999)
@@ -188,11 +211,7 @@ namespace MatlabFileConverter
                     throw new NotSupportedException();
             }
 
-            int zero = (type - numericFormat * 1000) / 100;
-            if (zero != 0)
-            {
-                throw new NotSupportedException();
-            }
+            Contract.Assert((type - numericFormat * 1000) / 100 == 0);
 
             int dataFormatFlag = (type - numericFormat * 1000) / 10;
             DataFormat dataFormat = DataFormat.Undefined;
@@ -288,6 +307,10 @@ namespace MatlabFileConverter
 
         private static Matrix ReadFullNumericMatrix(BinaryReader br, DataFormat dataFormat, string name, int numberOfColumns, int numberOfRows)
         {
+            Contract.Requires(br != null);
+            Contract.Requires(numberOfColumns > 0);
+            Contract.Requires(numberOfRows > 0);
+
             switch (dataFormat)
             {
                 case DataFormat.SignedInteger32:
@@ -301,6 +324,10 @@ namespace MatlabFileConverter
 
         private static Matrix ReadTextMatrix(BinaryReader br, DataFormat dataFormat, string name, int numberOfColumns, int numberOfRows)
         {
+            Contract.Requires(br != null);
+            Contract.Requires(numberOfColumns > 0);
+            Contract.Requires(numberOfRows > 0);
+
             if (dataFormat != DataFormat.UnsignedInteger8)
             {
                 throw new NotImplementedException();
@@ -321,6 +348,10 @@ namespace MatlabFileConverter
 
         private static Matrix ReadSignedInteger32Matrix(BinaryReader br, string name, int numberOfColumns, int numberOfRows)
         {
+            Contract.Requires(br != null);
+            Contract.Requires(numberOfColumns > 0);
+            Contract.Requires(numberOfRows > 0);
+
             int[][] matrix = new int[numberOfColumns][];
             for (int col = 0; col < numberOfColumns; col++)
             {
@@ -336,6 +367,10 @@ namespace MatlabFileConverter
 
         private static Matrix ReadDoublePrecisionMatrix(BinaryReader br, string name, int numberOfColumns, int numberOfRows)
         {
+            Contract.Requires(br != null);
+            Contract.Requires(numberOfColumns > 0);
+            Contract.Requires(numberOfRows > 0);
+
             double[][] matrix = new double[numberOfColumns][];
             for (int col = 0; col < numberOfColumns; col++)
             {

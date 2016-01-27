@@ -4,9 +4,11 @@
     using Microsoft.VisualBasic.CompilerServices;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
     using System.Windows.Forms;
+    using MatlabFileConverterLibrary;
 
     public partial class Form1 : Form
     {
@@ -43,6 +45,8 @@
 
         private void ConvertFile(string[] nameFilters, string matlabFileName, string valueListFileName, string cvsFileName, bool transpose)
         {
+            Contract.Requires(!string.IsNullOrEmpty(valueListFileName));
+
             List<Value> valueList = MatlabFileReader.ReadFile(matlabFileName);
             WriteValueList(valueList, valueListFileName);
             WriteCvsFile(valueList, cvsFileName, nameFilters, transpose);
@@ -50,10 +54,13 @@
 
         private void WriteValueList(List<Value> valueList, string valueListFileName)
         {
+            Contract.Requires(!string.IsNullOrEmpty(valueListFileName));
+
             using (StreamWriter sw = new StreamWriter(valueListFileName))
             {
                 foreach (Value value in valueList)
                 {
+                    Contract.Assume(value != null);
                     sw.WriteLine(value.Name + ": " + value.Description);
                 }
             }

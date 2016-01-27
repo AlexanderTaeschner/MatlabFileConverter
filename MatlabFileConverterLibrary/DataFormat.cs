@@ -5,29 +5,16 @@
 // <author>Alexander Täschner</author>
 //----------------------------------------------------------------------------------------------------
 
-namespace MatlabFileConverter
+namespace MatlabFileConverterLibrary
 {
-    using System;
-
-    class Matrix
+    enum DataFormat
     {
-        private readonly string name;
-        private readonly Array data;
-
-        public Matrix(string name, Array data)
-        {
-            this.name = name;
-            this.data = data;
-        }
-
-        public string Name
-        {
-            get { return this.name; }
-        }
-
-        public Array Data
-        {
-            get { return this.data; }
-        }
+        Undefined,
+        DoublePrecision,
+        SinglePrecision,
+        SignedInteger32,
+        SignedInteger16,
+        UnsignedInteger16,
+        UnsignedInteger8
     }
 }

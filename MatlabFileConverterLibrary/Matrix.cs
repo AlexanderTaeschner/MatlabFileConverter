@@ -5,18 +5,18 @@
 // <author>Alexander Täschner</author>
 //----------------------------------------------------------------------------------------------------
 
-namespace MatlabFileConverter
+namespace MatlabFileConverterLibrary
 {
-    internal class Value
+    using System;
+
+    class Matrix
     {
         private readonly string name;
-        private readonly string description;
-        private readonly double[] data;
+        private readonly Array data;
 
-        public Value(string name, string description, double[] data)
+        public Matrix(string name, Array data)
         {
             this.name = name;
-            this.description = description;
             this.data = data;
         }
 
@@ -25,12 +25,7 @@ namespace MatlabFileConverter
             get { return this.name; }
         }
 
-        public string Description
-        {
-            get { return this.description; }
-        }
-
-        public double[] Data
+        public Array Data
         {
             get { return this.data; }
         }
