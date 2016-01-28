@@ -1,6 +1,6 @@
 ﻿//----------------------------------------------------------------------------------------------------
 // <copyright file="MatlabFileReader.cs" company="GSI Helmholtzzentrum für Schwerionenforschung GmbH">
-//     Copyright (c) GSI Helmholtzzentrum für Schwerionenforschung GmbH. All rights reserved.
+//  Copyright (c) GSI Helmholtzzentrum für Schwerionenforschung GmbH. All rights reserved.
 // </copyright>
 // <author>Alexander Täschner</author>
 //----------------------------------------------------------------------------------------------------
@@ -12,8 +12,16 @@ namespace MatlabFileConverterLibrary
     using System.Diagnostics.Contracts;
     using System.IO;
 
+    /// <summary>
+    /// Class used to read from MATLAB files.
+    /// </summary>
     public static class MatlabFileReader
     {
+        /// <summary>
+        /// Reads a specified MATLAB file.
+        /// </summary>
+        /// <param name="matlabFileName">File path to the MATLAB file.</param>
+        /// <returns>The list of the stored values.</returns>
         public static List<Value> ReadFile(string matlabFileName)
         {
             Contract.Requires(!string.IsNullOrEmpty(matlabFileName));
@@ -148,8 +156,9 @@ namespace MatlabFileConverterLibrary
                         values[row] = sign * data2Row[col];
                     }
                 }
-                else if (storageMatrix == 1) // fixed parameters
+                else if (storageMatrix == 1)
                 {
+                    // fixed parameters
                     if ((data1.Length != 2) || (data1[0] == null) || (data1[1] == null))
                     {
                         throw new NotSupportedException();
@@ -211,9 +220,9 @@ namespace MatlabFileConverterLibrary
                     throw new NotSupportedException();
             }
 
-            Contract.Assert((type - numericFormat * 1000) / 100 == 0);
+            Contract.Assert((type - (numericFormat * 1000)) / 100 == 0);
 
-            int dataFormatFlag = (type - numericFormat * 1000) / 10;
+            int dataFormatFlag = (type - (numericFormat * 1000)) / 10;
             DataFormat dataFormat = DataFormat.Undefined;
             switch (dataFormatFlag)
             {
@@ -239,7 +248,7 @@ namespace MatlabFileConverterLibrary
                     throw new NotSupportedException();
             }
 
-            int matrixTypeFlag = type - numericFormat * 1000 - dataFormatFlag * 10;
+            int matrixTypeFlag = type - (numericFormat * 1000) - (dataFormatFlag * 10);
             MatrixType matrixType = MatrixType.Undefined;
             switch (matrixTypeFlag)
             {
