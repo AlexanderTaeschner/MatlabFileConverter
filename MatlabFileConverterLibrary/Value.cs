@@ -8,10 +8,12 @@
 namespace MatlabFileConverterLibrary
 {
     using System;
+    using System.Diagnostics;
 
     /// <summary>
     /// Class used to represent stored values.
     /// </summary>
+    [DebuggerDisplay("{name}:{description}")]
     public class Value
     {
         private readonly string name;
