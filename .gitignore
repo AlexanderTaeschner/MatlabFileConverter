@@ -1,3 +1,5 @@
 *.suo
 /MatlabFileConverter/bin
 /MatlabFileConverter/obj
+obj
+bin
